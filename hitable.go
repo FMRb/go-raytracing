@@ -2,9 +2,10 @@ package main
 
 // HitRecord struct for hitable objects
 type HitRecord struct {
-	t      float64
-	normal Vec3
-	p      Vec3
+	t        float64
+	normal   Vec3
+	p        Vec3
+	material *Material
 }
 
 // Hitable interface

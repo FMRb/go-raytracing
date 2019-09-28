@@ -15,7 +15,7 @@ func check(e error) {
 	}
 }
 
-func randomInUnitSphere() Vec3 {
+func RandomInUnitSphere() Vec3 {
 	var p Vec3
 	for {
 		p = Vec3{rand.Float64(), rand.Float64(), rand.Float64()}.ScalarMultiple(2.0).Substract(Vec3{1, 1, 1})
