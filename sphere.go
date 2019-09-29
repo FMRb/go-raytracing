@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -29,7 +28,6 @@ func (s Sphere) hit(r *Ray, tMin float64, tMax float64, rec *HitRecord) bool {
 		}
 		temp = (-b + math.Sqrt(discriminant)) / (2 * a)
 		if temp < tMax && temp > tMin {
-			defer fmt.Println("Last step out ", rec)
 			rec.t = temp
 			rec.p = r.PointAtParameter(temp)
 			rec.normal = (rec.p.Substract(s.center)).ScalarDivide(s.radius)

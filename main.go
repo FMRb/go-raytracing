@@ -60,11 +60,12 @@ func main() {
 	_, err = f.WriteString(header.String())
 	check(err)
 	// Hitable
-	list := make([]Hitable, 4)
-	list[0] = Sphere{Vec3{0, 0, -1}, 0.5, Labertiam{Vec3{0.8, 0.3, 0.3}}}
+	list := make([]Hitable, 5)
+	list[0] = Sphere{Vec3{0, 0, -1}, 0.5, Labertiam{Vec3{0.1, 0.2, 0.5}}}
 	list[1] = Sphere{Vec3{0, -100.5, -1}, 100, Labertiam{Vec3{0.8, 0.8, 0.0}}}
-	list[2] = Sphere{Vec3{1, 0, -1}, 0.5, Metal{Vec3{0.8, 0.6, 0.2}}}
-	list[3] = Sphere{Vec3{-1, 0, -1}, 0.5, Metal{Vec3{0.8, 0.8, 0.8}}}
+	list[2] = Sphere{Vec3{1, 0, -1}, 0.5, NewMetal(Vec3{0.8, 0.6, 0.2}, 0.0)}
+	list[3] = Sphere{Vec3{-1, 0, -1}, 0.5, Dielectric{1.5}}
+	list[4] = Sphere{Vec3{-1, 0, -1}, -0.45, Dielectric{1.5}}
 	world := HitableList{list}
 	cam := NewCamera()
 	for j := ny - 1; j >= 0; j-- {
