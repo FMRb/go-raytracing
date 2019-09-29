@@ -16,6 +16,7 @@ func (hl HitableList) hit(r *Ray, tMin float64, tMax float64, rec *HitRecord) bo
 			rec.normal = tempRec.normal
 			rec.p = tempRec.p
 			rec.t = tempRec.t
+			rec.material = tempRec.material
 		}
 	}
 	return hitAnything

@@ -5,7 +5,7 @@ type HitRecord struct {
 	t        float64
 	normal   Vec3
 	p        Vec3
-	material *Material
+	material Material
 }
 
 // Hitable interface

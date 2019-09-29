@@ -15,6 +15,7 @@ func check(e error) {
 	}
 }
 
+// RandomInUnitSphere generate a random unit vector
 func RandomInUnitSphere() Vec3 {
 	var p Vec3
 	for {
@@ -26,11 +27,15 @@ func RandomInUnitSphere() Vec3 {
 	return p
 }
 
-func color(r Ray, world *HitableList) Vec3 {
+func color(r Ray, world *HitableList, depth int) Vec3 {
 	var rec HitRecord
 	if world.hit(&r, 0.0001, math.MaxFloat64, &rec) {
-		target := rec.p.Add(rec.normal).Add(randomInUnitSphere())
-		return color(Ray{rec.p, target.Substract(rec.p)}, world).ScalarMultiple(0.5)
+		var scattered Ray
+		var attenuation Vec3
+		if depth < 50 && rec.material.scatter(&r, &rec, &attenuation, &scattered) {
+			return attenuation.Multiple(color(scattered, world, depth+1))
+		}
+		return Vec3{0, 0, 0}
 	}
 	unitDirection := r.Direction().UnitVector()
 	t := 0.5 * (unitDirection.Y + 1.0)
@@ -44,8 +49,10 @@ func main() {
 	check(err)
 	defer f.Close()
 
+	// Size of the viewport
 	nx := 400
 	ny := 200
+	// Number of ray samples per pixel
 	ns := 100
 	var header bytes.Buffer
 	fmt.Fprintf(&header, "P3\n%d %d\n255\n", nx, ny)
@@ -53,12 +60,13 @@ func main() {
 	_, err = f.WriteString(header.String())
 	check(err)
 	// Hitable
-	list := make([]Hitable, 2)
-	list[0] = Sphere{Vec3{0, 0, -1}, 0.5}
-	list[1] = Sphere{Vec3{0, -100.5, -1}, 100}
+	list := make([]Hitable, 4)
+	list[0] = Sphere{Vec3{0, 0, -1}, 0.5, Labertiam{Vec3{0.8, 0.3, 0.3}}}
+	list[1] = Sphere{Vec3{0, -100.5, -1}, 100, Labertiam{Vec3{0.8, 0.8, 0.0}}}
+	list[2] = Sphere{Vec3{1, 0, -1}, 0.5, Metal{Vec3{0.8, 0.6, 0.2}}}
+	list[3] = Sphere{Vec3{-1, 0, -1}, 0.5, Metal{Vec3{0.8, 0.8, 0.8}}}
 	world := HitableList{list}
 	cam := NewCamera()
-	fmt.Printf("CAMERA %v\n", cam)
 	for j := ny - 1; j >= 0; j-- {
 		for i := 0; i < nx; i++ {
 			col := Vec3{0.0, 0.0, 0.0}
@@ -66,7 +74,7 @@ func main() {
 				u := (float64(i) + rand.Float64()) / float64(nx)
 				v := (float64(j) + rand.Float64()) / float64(ny)
 				r := cam.GetRay(u, v)
-				col = col.Add(color(r, &world))
+				col = col.Add(color(r, &world, 0))
 			}
 			col = col.ScalarDivide(float64(ns))
 			col = Vec3{math.Sqrt(col.X), math.Sqrt(col.Y), math.Sqrt(col.Z)}
