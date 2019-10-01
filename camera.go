@@ -11,14 +11,18 @@ type Camera struct {
 }
 
 // NewCamera factory method for Camera type
-func NewCamera(vfov, aspect float64) Camera {
+func NewCamera(lookFrom, lookAt, vup Vec3, vfov, aspect float64) Camera {
 	theta := vfov * math.Pi / 180
 	halfHeight := math.Tan(theta / 2)
 	halfWidth := aspect * halfHeight
+	origin := lookFrom
+	w := lookFrom.Substract(lookAt).UnitVector()
+	u := vup.Cross(w).UnitVector()
+	v := w.Cross(u)
 	lowerLeftCorner := Vec3{-halfWidth, -halfHeight, -1.0}
-	horizontal := Vec3{2 * halfWidth, 0.0, 0.0}
-	vertical := Vec3{0.0, 2 * halfHeight, 0.0}
-	origin := Vec3{0.0, 0.0, 0.0}
+	lowerLeftCorner = origin.Substract(u.ScalarMultiple(halfWidth)).Substract(v.ScalarMultiple(halfHeight)).Substract(w)
+	horizontal := u.ScalarMultiple(2 * halfWidth)
+	vertical := v.ScalarMultiple(2 * halfHeight)
 	return Camera{origin, lowerLeftCorner, horizontal, vertical}
 }
 
