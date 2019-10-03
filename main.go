@@ -67,7 +67,12 @@ func main() {
 	list[3] = Sphere{Vec3{-1, 0, -1}, 0.5, Dielectric{1.5}}
 	list[4] = Sphere{Vec3{-1, 0, -1}, -0.45, Dielectric{1.5}}
 	world := HitableList{list}
-	cam := NewCamera(Vec3{-2, 2, 1}, Vec3{0, 0, -1}, Vec3{0, 1, 0}, 20, float64(nx/ny))
+	lookFrom := Vec3{3, 3, 2}
+	lookAt := Vec3{0, 0, -1}
+	distToFocus := lookFrom.Substract(lookAt).Length()
+	aperture := 1.0
+	cam := NewCamera(lookFrom, lookAt, Vec3{0, 1, 0}, 20,
+		float64(nx/ny), aperture, distToFocus)
 	for j := ny - 1; j >= 0; j-- {
 		for i := 0; i < nx; i++ {
 			col := Vec3{0.0, 0.0, 0.0}
